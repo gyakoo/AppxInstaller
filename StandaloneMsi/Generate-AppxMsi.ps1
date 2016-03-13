@@ -2,60 +2,28 @@
 # Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 param(
-    [Parameter(Mandatory=$true)][string]$inputDir
+    [Parameter(Mandatory=$true)][string]$package
 )
 
-. "$PSScriptRoot\..\..\scripts\common\_common.ps1"
-
-$DotnetMSIOutput = ""
-$DotnetBundleOutput = ""
-$WixRoot = ""
+$WixRoot = "$PSScriptRoot\wix"
 $InstallFileswsx = "install-files.wxs"
 $InstallFilesWixobj = "install-files.wixobj"
 
-function AcquireWixTools
-{
-    $result = Join-Path $OutputDir WiXTools
-
-    if(Test-Path "$result\candle.exe")
+    if(!Test-Path "$result\candle.exe")
     {
-        return $result
-    }
-
-    Write-Host Downloading Wixtools..
-    New-Item $result -type directory -force | Out-Null
+    
+	Write-Host Downloading Wixtools..
+    New-Item $WixRoot -type directory -force | Out-Null
     # Download Wix version 3.10.2 - https://wix.codeplex.com/releases/view/619491
-    Invoke-WebRequest -Uri https://wix.codeplex.com/downloads/get/1540241 -Method Get -OutFile $result\WixTools.zip
+    Invoke-WebRequest -Uri https://wix.codeplex.com/downloads/get/1540241 -Method Get -OutFile $WixRoot\WixTools.zip
 
     Write-Host Extracting Wixtools..
-    [System.IO.Compression.ZipFile]::ExtractToDirectory("$result\WixTools.zip", $result)
+    [System.IO.Compression.ZipFile]::ExtractToDirectory("$WixRoot\WixTools.zip", $WixRoot)
 
-    if($LastExitCode -ne 0)
-    {
-        throw "Unable to download and extract the WixTools."
-    }
+	}
 
-    return $result
-}
 
-function RunHeat
-{
-    $result = $true
-    pushd "$WixRoot"
 
-    Write-Host Running heat..
-
-    .\heat.exe dir `"$inputDir`" -template fragment -sreg -gg -var var.DotnetSrc -cg InstallFiles -srd -dr DOTNETHOME -out $InstallFileswsx | Out-Host
-
-    if($LastExitCode -ne 0)
-    {
-        $result = $false
-        Write-Host "Heat failed with exit code $LastExitCode."
-    }
-
-    popd
-    return $result
-}
 
 function RunCandle
 {
