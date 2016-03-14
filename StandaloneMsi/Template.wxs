@@ -1,18 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-    <Product Id="*" Name="$(var.ProductName)" Language="$(var.ProductLanguage)" Version="$(var.ProductVersion)" Manufacturer="$(var.Manufacturer)" UpgradeCode="$(var.UpgradeCode)">
-        <Package Compressed="yes" InstallScope="perMachine" InstallerVersion="200" />       
-        <MediaTemplate CabinetTemplate="dnet-{0}.cab" CompressionLevel="high" />
-        <Feature Id="MainFeature" Title="Main Feature" Level="1">
-            <ComponentGroupRef Id="InstallFiles" />
-            <ComponentGroupRef Id="AuthoredRegistryKeys"/>
-        </Feature>
-    </Product>
-    <Fragment>
-        <Directory Id="TARGETDIR" Name="SourceDir">
-            <Directory Id="$(var.Program_Files)">
-                <Directory Id="DOTNETHOME" Name="dotnet"/>
+  <Product Id="*" UpgradeCode="7b0af2d8-d27b-4a07-9be5-88185a9153be"
+           Name="SampleApp appx msi" Version="0.0.1" Manufacturer="Example Company Name" Language="1033">
+    <Package InstallerVersion="200" Compressed="yes" Comments="Windows Installer Package"/>
+    <Media Id="1" Cabinet="product.cab" EmbedCab="yes"/>
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLDIR" Name="SampleApp2">
+          <Component Id="ApplicationFiles" Guid="a2a84f6a-2654-4ace-aefd-55387c5cb015">
+            <File Id="script" Source="Install-UntrustedAppx.ps1"/>
+            <File Id="cert" Source="SampleApp_1.0.0.0_x64.appx"/>
+            <File Id="appx" Source="SampleApp_1.0.0.0_x64.cer"/>
+          </Component>
+          <Directory Id="depsdir" Name="Dependencies">
+            <Directory Id="depsx64" Name="x64">
+              <Component Id="depsFiles" Guid="2b6515e9-5b3a-4789-b1f0-cb44d29ab987">
+                <File Id="Microsoft.NET.Native.Framework.1.2.appx" Source="Dependencies/x64/Microsoft.NET.Native.Framework.1.2.appx"/>
+                <File Id="Microsoft.NET.Native.Runtime.1.1.appx" Source="Dependencies/x64/Microsoft.NET.Native.Runtime.1.1.appx"/>
+                <File Id="Microsoft.VCLibs.x64.14.00.appx" Source="Dependencies/x64/Microsoft.VCLibs.x64.14.00.appx"/>
+              </Component>
             </Directory>
+          </Directory>
         </Directory>
-    </Fragment>
+      </Directory>
+    </Directory>
+
+    <Feature Id="DefaultFeature" Level="1">
+      <ComponentRef Id="ApplicationFiles"/>
+      <ComponentRef Id="depsFiles"/>
+    </Feature>
+
+    <SetProperty Id="InstallAppx" Before="InstallFiles" Sequence="execute" Value ="&quot;powershell.exe&quot; -ExecutionPolicy Bypass -File &quot;[INSTALLDIR]Install-UntrustedAppx.ps1&quot; SampleApp_1.0.0.0_x64" />
+    <CustomAction Id="InstallAppx" BinaryKey="WixCA" DllEntry="CAQuietExec" Execute="deferred" Return="check" Impersonate="yes" />
+    <SetProperty Id="UninstallAppx" Before="InstallFiles" Sequence="execute" Value ="&quot;powershell.exe&quot; -ExecutionPolicy Bypass -Command &quot;&amp; { }&quot;" />
+    <CustomAction Id="UninstallAppx" BinaryKey="WixCA" DllEntry="CAQuietExec" Execute="deferred" Return="check" Impersonate="yes" />
+
+    <InstallExecuteSequence>
+      <Custom Action='InstallAppx' After='InstallFiles'>NOT Installed</Custom>
+      <Custom Action='UninstallAppx' After='InstallFiles'>REMOVE~="ALL"</Custom>
+    </InstallExecuteSequence>
+
+  </Product>
 </Wix>

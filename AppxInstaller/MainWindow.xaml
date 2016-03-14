@@ -28,6 +28,9 @@
                 <Label>Package integrity:</Label>
                 <Label Content="{Binding PackageIntegrity}"></Label>
             </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Button Click="Button_Click">Install</Button>
+            </StackPanel>
         </StackPanel>
         
         
