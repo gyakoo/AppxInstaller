@@ -1,6 +1,6 @@
 $WixRoot = "$PSScriptRoot\wix"
 $InstallFileswsx = "..\Template.wxs"
-$InstallFilesWixobj = "..\Template.wixobj"
+$InstallFilesWixobj = "..\Sampleappx.wixobj"
 
 if(!(Test-Path "$WixRoot\candle.exe"))
 {
@@ -13,13 +13,12 @@ if(!(Test-Path "$WixRoot\candle.exe"))
     Write-Host Extracting Wixtools..
     Add-Type -AssemblyName System.IO.Compression.FileSystem
     [System.IO.Compression.ZipFile]::ExtractToDirectory("$WixRoot\WixTools.zip", $WixRoot)
-
 }
 
 pushd "$WixRoot"
-.\candle.exe $InstallFileswsx -ext WixUtilExtension -o "$PSScriptRoot\Template.wixobj" 
-.\light.exe $InstallFilesWixobj -ext WixUtilExtension -b "$PSScriptRoot" -o "$PSScriptRoot\Template.msi" 
+.\candle.exe $InstallFileswsx -ext WixUtilExtension -o "$PSScriptRoot\Sampleappx.wixobj" 
+.\light.exe $InstallFilesWixobj -ext WixUtilExtension -b "$PSScriptRoot" -o "$PSScriptRoot\Sampleappx.msi" 
 popd
 
-#msiexec.exe /i Template.msi /log log.txt
-#msiexec.exe /x Template.msi /log log.txt
+#msiexec.exe /i Sampleappx.msi /log log.txt
+#msiexec.exe /x Sampleappx.msi /log log.txt

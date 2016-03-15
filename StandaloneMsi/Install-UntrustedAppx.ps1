@@ -1,49 +1,35 @@
 ﻿param(
-    [string]$packageName = $null
+    [string]$packageName = $null,
+    [switch]$InstallCert = $false
 )
-$PackageSignature = Get-AuthenticodeSignature "$PSScriptRoot\$packageName.appx"
-$PackageCertificate = $PackageSignature.SignerCertificate
-
-if (!$PackageCertificate)
-{
-	throw "Usigned package"
-	exit -1
+if($InstallCert){
+    certutil.exe -addstore TrustedPeople "$PSScriptRoot\$packageName.cer"
+    exit 0
 }
+else{
+    $PackageSignature = Get-AuthenticodeSignature "$PSScriptRoot\$packageName.appx"
+    $PackageCertificate = $PackageSignature.SignerCertificate
 
-if ($PackageSignature.Status -ne "Valid")
-{
-	Write-Host "installing cert!"
-	certutil.exe -addstore TrustedPeople "$PSScriptRoot\$packageName.cer"
-}
+    if (!$PackageCertificate)
+    {
+    	throw "Usigned package"
+    	exit -1
+    }
 
-$DependencyPackagesDir = Join-Path $PSScriptRoot "Dependencies"
-$DependencyPackages = @()
+    if ($PackageSignature.Status -ne "Valid")
+    {
+        $RelaunchArgs = '-ExecutionPolicy Unrestricted -file "' + "$PSScriptRoot\Install-UntrustedAppx.ps1" + '"' + " $packageName -InstallCert"
+        $AdminProcess = Start-Process "powershell.exe" -Verb RunAs -WorkingDirectory $PSScriptRoot -ArgumentList $RelaunchArgs -Wait
+    }
 
-if (Test-Path $DependencyPackagesDir)
-{
-	$DependencyPackages += Get-ChildItem (Join-Path $DependencyPackagesDir "*.appx") | Where-Object { $_.Mode -NotMatch "d" }
-
-	if (($Env:Processor_Architecture -eq "x86") -and (Test-Path (Join-Path $DependencyPackagesDir "x86")))
-	{
-		$DependencyPackages += Get-ChildItem (Join-Path $DependencyPackagesDir "x86\*.appx") | Where-Object { $_.Mode -NotMatch "d" }
-	}
-	if (($Env:Processor_Architecture -eq "amd64") -and (Test-Path (Join-Path $DependencyPackagesDir "x64")))
-	{
-		$DependencyPackages += Get-ChildItem (Join-Path $DependencyPackagesDir "x64\*.appx") | Where-Object { $_.Mode -NotMatch "d" }
-	}
-	if (($Env:Processor_Architecture -eq "arm") -and (Test-Path (Join-Path $DependencyPackagesDir "arm")))
-	{
-		$DependencyPackages += Get-ChildItem (Join-Path $DependencyPackagesDir "arm\*.appx") | Where-Object { $_.Mode -NotMatch "d" }
-	}
-}
-
-$DependencyPackages.FullName
-
-if ($DependencyPackages.FullName.Count -gt 0)
-{
-	Add-AppxPackage -Path "$PSScriptRoot\$packageName.appx" -DependencyPath $DependencyPackages.FullName -ForceApplicationShutdown -Verbose
-}
-else
-{
-	Add-AppxPackage -Path "$PSScriptRoot\$packageName.appx" -ForceApplicationShutdown -Verbose
+    $DependencyPackages = Get-ChildItem (Join-Path (Join-Path $PSScriptRoot "Dependencies") "*.appx")
+    
+    if ($DependencyPackages.Count -gt 0)
+    {
+    	Add-AppxPackage -Path "$PSScriptRoot\$packageName.appx" -DependencyPath $DependencyPackages.FullName -ForceApplicationShutdown -Verbose
+    }
+    else
+    {
+    	Add-AppxPackage -Path "$PSScriptRoot\$packageName.appx" -ForceApplicationShutdown -Verbose
+    }
 }
