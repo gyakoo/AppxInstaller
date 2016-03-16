@@ -7,7 +7,7 @@
 
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder">
-        <Directory Id="INSTALLDIR" Name="SampleApp2">
+        <Directory Id="INSTALLDIR" Name="SampleApp">
           <Component Id="ApplicationFiles" Guid="a2a84f6a-2654-4ace-aefd-55387c5cb015">
             <File Id="InstallUntrustedAppx.ps1" Source="Install-UntrustedAppx.ps1"/>
             <File Id="UninstallUntrustedAppx.ps1" Source="Uninstall-UntrustedAppx.ps1"/>
@@ -37,8 +37,8 @@
     <CustomAction Id="UninstallAppx" BinaryKey="WixCA" DllEntry="CAQuietExec" Execute="deferred" Return="check" Impersonate="yes" />
 
     <InstallExecuteSequence>
-      <Custom Action='InstallAppx' After='InstallFiles'>NOT Installed</Custom>
-      <Custom Action='UninstallAppx' After='InstallFiles'>REMOVE~="ALL"</Custom>
+      <Custom Action='InstallAppx' After='InstallFiles'>NOT REMOVE</Custom>
+      <Custom Action='UninstallAppx' After='InstallFiles'>REMOVE~=ALL</Custom>
     </InstallExecuteSequence>
 
   </Product>
