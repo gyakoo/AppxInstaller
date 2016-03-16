@@ -1,5 +1,3 @@
-# Appx tools
-
 This repostitory was created in respose to some misconceptions and incorrect information about the universal windows platform (UWP) apps, specifically with regards to their dependency on the windows store and suppsed inability to be distributed outside it.
 
 This repostitory is devided in to two parts:
@@ -19,7 +17,7 @@ Appx installer is a file handler for appx files. Using it, when a appx file is d
 
 ### Non-store uwp application must stillb e submitted to microsoft
 
-**False*. An app that is not published to the store is signed locally using the signtool.exe utility from the windows sdk. Signing is done via a standard x509 certificate that can also be created locally with the makecert utility. 
+**False**. An app that is not published to the store is signed locally using the signtool.exe utility from the windows sdk. Signing is done via a standard x509 certificate that can also be created locally with the makecert utility. 
 
 ### In order to install Non-store uwp apps, users must manually change their settings and accept security prompts
 
