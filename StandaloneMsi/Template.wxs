@@ -2,7 +2,7 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Product Id="*" UpgradeCode="7b0af2d8-d27b-4a07-9be5-88185a9153be"
            Name="SampleApp" Version="0.0.1" Manufacturer="Example Company Name" Language="1033">
-    <Package InstallerVersion="200" Compressed="yes" Comments="Windows Installer Package"/>
+    <Package InstallerVersion="200" Compressed="yes" Comments="Windows Installer Package" Platform="x64"/>
     <Media Id="1" Cabinet="product.cab" EmbedCab="yes"/>
 
     <Directory Id="TARGETDIR" Name="SourceDir">
@@ -30,11 +30,11 @@
       <ComponentRef Id="DependencyFiles"/>
     </Feature>
 
-    <SetProperty Id="InstallAppx" Before="InstallFiles" Sequence="execute" Value ="&quot;powershell.exe&quot; -ExecutionPolicy Bypass -File &quot;[INSTALLDIR]Install-UntrustedAppx.ps1&quot; SampleApp_1.0.0.0_x64" />
-    <CustomAction Id="InstallAppx" BinaryKey="WixCA" DllEntry="CAQuietExec" Execute="deferred" Return="check" Impersonate="yes" />
-    
+    <SetProperty Id="InstallAppx" Before="InstallFiles" Sequence="execute" Value ="&quot;C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe&quot; -ExecutionPolicy Bypass -File &quot;[INSTALLDIR]Install-UntrustedAppx.ps1&quot; SampleApp_1.0.0.0_x64" />
+    <CustomAction Id="InstallAppx" BinaryKey="WixCA" DllEntry="WixQuietExec64" Execute="deferred" Return="check" Impersonate="yes" />
+
     <SetProperty Id="UninstallAppx" Before="InstallFiles" Sequence="execute" Value ="&quot;powershell.exe&quot; -ExecutionPolicy Bypass -File &quot;[INSTALLDIR]Uninstall-UntrustedAppx.ps1&quot; SampleApp_1.0.0.0_x64" />
-    <CustomAction Id="UninstallAppx" BinaryKey="WixCA" DllEntry="CAQuietExec" Execute="deferred" Return="check" Impersonate="yes" />
+    <CustomAction Id="UninstallAppx" BinaryKey="WixCA" DllEntry="WixQuietExec64" Execute="deferred" Return="check" Impersonate="yes" />
 
     <InstallExecuteSequence>
       <Custom Action='InstallAppx' After='InstallFiles'>NOT REMOVE</Custom>
