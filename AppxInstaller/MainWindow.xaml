@@ -5,35 +5,24 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AppxInstaller"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="200" Width="525">
     <Grid>
-        <StackPanel>
+        <StackPanel Margin="15">
             <StackPanel Orientation="Horizontal">
-                <Label>Title</Label>
-                <Label Content="{Binding Title}"></Label>
+                <Label>Application name:</Label>
+                <Label Content="{Binding AppName}"></Label>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label>Publisher</Label>
                 <Label Content="{Binding Publisher}"></Label>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
-                <Label>Description</Label>
-                <Label Content="{Binding Description}"></Label>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Label>Certificate:</Label>
+                <Label>Signed by:</Label>
                 <Label Content="{Binding Certificate}"></Label>
             </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Label>Package integrity:</Label>
-                <Label Content="{Binding PackageIntegrity}"></Label>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Button Click="Button_Click">Install</Button>
+            <StackPanel Orientation="Horizontal" Margin="15" HorizontalAlignment="Right">
+                <Button IsEnabled="{Binding InstallEnabled}" Click="Button_Click" Padding="5">Install</Button>
             </StackPanel>
         </StackPanel>
-        
-        
-        
     </Grid>
 </Window>
