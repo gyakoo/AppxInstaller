@@ -29,7 +29,7 @@ Appx installer is a file handler for appx files. Using it, when a appx file is d
 
 #### Non-uwp application do not have access to Uwp apis
 
-**Mostly false**. Some Uwp apis are not available for non uwp apps, mostly relating to the store, the app model itself (like sandboxed storage) and ads, but some other significant apis are not available, like the xaml ui stack.
+**Mostly false**. Some Uwp apis are not available for non uwp apps, mostly relating to the store, the app model itself (like sandboxed storage) and ads, but some other significant apis are available, like the xaml ui stack.
 
 #### Uwp applications cannot access traditional windows apis
 
